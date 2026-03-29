@@ -17,14 +17,17 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private LayerMask enemyLayers;
     [SerializeField] private float climbSpeed = 5f;
     private bool isClimbing;
-    [SerializeField] private AudioClip checkpointSound; // Ide húzzuk majd a hangot
-    private AudioSource audioSource; // Ez lesz a "hangszórónk"
+    [SerializeField] private AudioClip checkpointSound; // Ide hï¿½zzuk majd a hangot
+    private AudioSource audioSource; // Ez lesz a "hangszï¿½rï¿½nk"
 
     private CapsuleCollider2D capsuleCollider;
 
     private float wallJumpCooldown;
     private float horizontalInput;
     private Vector2 checkpointPos;
+    //public Animator transition;
+    public Animator transition;
+    public float transitionTime = 1.25f;
 
     private void Awake()
     {
@@ -56,13 +59,13 @@ public class Player_Control : MonoBehaviour
         playerAnim.SetBool("OnWall", onWall());
         playerAnim.SetBool("Falling", !isGrounded() && playerBody.linearVelocity.y < 0 && !isClimbing);
 
-        // Támadás
+        // Tï¿½madï¿½s
         if (Input.GetKeyDown(KeyCode.J))
         {
             Attack();
         }
 
-        // --- MOZGÁS ÉS MÁSZÁS LOGIKA ---
+        // --- MOZGï¿½S ï¿½S Mï¿½SZï¿½S LOGIKA ---
         if (isClimbing)
         {
             playerBody.gravityScale = 0;
@@ -72,29 +75,29 @@ public class Player_Control : MonoBehaviour
         {
             playerBody.gravityScale = 3;
 
-            // Csak akkor mozgunk normálisan, ha nincs wall jump cooldown
+            // Csak akkor mozgunk normï¿½lisan, ha nincs wall jump cooldown
             if (wallJumpCooldown > 0.2f)
             {
-                // Falon csúszás
+                // Falon csï¿½szï¿½s
                 if (onWall() && !isGrounded())
                 {
                     playerBody.gravityScale = 1;
                     playerBody.linearVelocity = Vector2.zero;
                 }
 
-                // Vízszintes mozgás
+                // Vï¿½zszintes mozgï¿½s
                 if (isGrounded())
                 {
                     playerBody.linearVelocity = new Vector2(horizontalInput * speed, playerBody.linearVelocity.y);
                 }
-                else if (!onWall()) // Levegõben mozgás
+                else if (!onWall()) // Levegï¿½ben mozgï¿½s
                 {
                     float targetSpeed = horizontalInput * speed;
                     float newVelocityX = Mathf.MoveTowards(playerBody.linearVelocity.x, targetSpeed, airAcceleration * Time.deltaTime);
                     playerBody.linearVelocity = new Vector2(newVelocityX, playerBody.linearVelocity.y);
                 }
 
-                // Ugrás figyelése
+                // Ugrï¿½s figyelï¿½se
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     Jump();
@@ -106,11 +109,11 @@ public class Player_Control : MonoBehaviour
             }
         }
 
-        // Mászás logika belül
+        // Mï¿½szï¿½s logika belï¿½l
         if (isClimbing)
         {
             playerBody.gravityScale = 0;
-            // Csak függõlegesen mozogjon, vagy csak minimális vízszintes mozgást engedjünk!
+            // Csak fï¿½ggï¿½legesen mozogjon, vagy csak minimï¿½lis vï¿½zszintes mozgï¿½st engedjï¿½nk!
             playerBody.linearVelocity = new Vector2(horizontalInput * (speed * 0.5f), verticalInput * climbSpeed);
             playerAnim.SetBool("isClimbing", true);
         }
@@ -118,7 +121,7 @@ public class Player_Control : MonoBehaviour
         {
             playerBody.gravityScale = 3;
             playerAnim.SetBool("isClimbing", false); // Ne felejtsd el kikapcsolni!
-                                                     // ... többi kód ...
+                                                     // ... tï¿½bbi kï¿½d ...
         }
     }
 
@@ -131,7 +134,7 @@ public class Player_Control : MonoBehaviour
         }
         else if (onWall() && !isGrounded())
         {
-            // Wall Jump irányítás
+            // Wall Jump irï¿½nyï¿½tï¿½s
             playerBody.linearVelocity = new Vector2(-Mathf.Sign(transform.localScale.x) * 5, 10);
             wallJumpCooldown = 0;
         }
@@ -162,7 +165,7 @@ public class Player_Control : MonoBehaviour
 
         if (collision.CompareTag("Checkpoint"))
         {
-            // Hozzáadunk +1-et az Y tengelyhez, hogy kicsit magasabbról essen le
+            // Hozzï¿½adunk +1-et az Y tengelyhez, hogy kicsit magasabbrï¿½l essen le
             checkpointPos = collision.transform.position + new Vector3(0, 1f, 0);
             
 
@@ -178,6 +181,15 @@ public class Player_Control : MonoBehaviour
         {
             isClimbing = true;
         }
+    
+        
+        if (collision.CompareTag("NextLevel"))
+        {
+            LoadNextLevel();
+            Debug.Log("Bementem a kapuba!");
+        }
+    
+    
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -185,7 +197,7 @@ public class Player_Control : MonoBehaviour
         if (collision.CompareTag("Ladder"))
         {
             isClimbing = false;
-            playerBody.gravityScale = 3; // Biztonsági visszaállítás
+            playerBody.gravityScale = 3; // Biztonsï¿½gi visszaï¿½llï¿½tï¿½s
         }
     }
 
@@ -195,7 +207,7 @@ public class Player_Control : MonoBehaviour
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         foreach (Collider2D enemy in hitEnemies)
         {
-            Debug.Log("Eltaláltuk: " + enemy.name);
+            Debug.Log("Eltalï¿½ltuk: " + enemy.name);
         }
     }
 
@@ -217,5 +229,19 @@ public class Player_Control : MonoBehaviour
     {
         if (attackPoint == null) return;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+    }
+
+    public void LoadNextLevel()
+    {
+        StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+    }
+    
+    IEnumerator LoadLevel(int levelIndex)
+    {
+        transition.SetTrigger("Start");
+
+        yield return new WaitForSeconds(transitionTime);
+
+        SceneManager.LoadScene(levelIndex);
     }
 }
