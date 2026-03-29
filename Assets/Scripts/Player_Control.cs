@@ -13,7 +13,7 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private float airAcceleration = 10f;
     [SerializeField] private Transform attackPoint;
-    [SerializeField] private float attackRange = 0.5f;
+    [SerializeField] private float attackRange = 1.7f;
     [SerializeField] private LayerMask enemyLayers;
     [SerializeField] private float climbSpeed = 5f;
     [SerializeField] private float damageAmount = 25f;
