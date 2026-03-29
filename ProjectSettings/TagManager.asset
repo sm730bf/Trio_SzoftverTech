@@ -7,6 +7,9 @@ TagManager:
   - Ground
   - Wall
   - Obstacle
+  - Ladder
+  - CheckPoint
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -16,8 +19,8 @@ TagManager:
   - UI
   - Ground
   - Wall
-  - 
-  - 
+  - Ladder
+  - Player
   - 
   - 
   - 
@@ -41,6 +44,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1975459503
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
