@@ -16,6 +16,7 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private float attackRange = 0.5f;
     [SerializeField] private LayerMask enemyLayers;
     [SerializeField] private float climbSpeed = 5f;
+    [SerializeField] private float damageAmount = 25f;
     private bool isClimbing;
     [SerializeField] private AudioClip checkpointSound; // Ide hï¿½zzuk majd a hangot
     private AudioSource audioSource; // Ez lesz a "hangszï¿½rï¿½nk"
@@ -207,7 +208,13 @@ public class Player_Control : MonoBehaviour
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         foreach (Collider2D enemy in hitEnemies)
         {
-            Debug.Log("Eltalï¿½ltuk: " + enemy.name);
+
+            IDamageAble idamageable = enemy.GetComponent<IDamageAble>();
+            if (idamageable != null)
+            {
+                idamageable.Damage(damageAmount); // Például 25 sebzés
+            }
+            Debug.Log("Eltaláltuk: " + enemy.name);
         }
     }
 
