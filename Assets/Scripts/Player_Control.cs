@@ -17,6 +17,8 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private LayerMask enemyLayers;
     [SerializeField] private float climbSpeed = 5f;
     [SerializeField] private float damageAmount = 25f;
+    [SerializeField] private float wallJumpHeight = 10f;
+    [SerializeField] private float wallJumpDistance = 20f;
     private bool isClimbing;
     [SerializeField] private AudioClip checkpointSound; // Ide h�zzuk majd a hangot
     private AudioSource audioSource; // Ez lesz a "hangsz�r�nk"
@@ -136,8 +138,9 @@ public class Player_Control : MonoBehaviour
         else if (onWall() && !isGrounded())
         {
             // Wall Jump ir�ny�t�s
-            playerBody.linearVelocity = new Vector2(-Mathf.Sign(transform.localScale.x) * 5, 10);
+            playerBody.linearVelocity = new Vector2(-Mathf.Sign(transform.localScale.x) * wallJumpHeight, wallJumpDistance);
             wallJumpCooldown = 0;
+            playerAnim.SetTrigger("Jump");
         }
     }
 
