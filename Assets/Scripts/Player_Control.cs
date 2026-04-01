@@ -20,8 +20,8 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private float wallJumpHeight = 10f;
     [SerializeField] private float wallJumpDistance = 20f;
     private bool isClimbing;
-    [SerializeField] private AudioClip checkpointSound; // Ide h�zzuk majd a hangot
-    private AudioSource audioSource; // Ez lesz a "hangsz�r�nk"
+    [SerializeField] private AudioClip checkpointSound; 
+    private AudioSource audioSource; 
 
     private CapsuleCollider2D capsuleCollider;
 
