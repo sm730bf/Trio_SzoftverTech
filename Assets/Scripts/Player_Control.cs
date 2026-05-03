@@ -21,7 +21,7 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private float wallJumpDistance = 20f;
 
     private bool isClimbing;
-    private bool isDead = false; // EZZEL AKADÁLYOZZUK MEG A BEFAGYÁST!
+    private bool isDead = false;
 
     [SerializeField] private AudioClip checkpointSound;
     private AudioSource audioSource;
@@ -50,31 +50,26 @@ public class Player_Control : MonoBehaviour
 
     private void Update()
     {
-        // HA HALOTTAK VAGYUNK, SEMMI MÁS NE FUSSON LE!
         if (isDead) return;
 
         horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        // Sprite forgatása
         if (horizontalInput > 0.01f)
             transform.localScale = new Vector3(1, 1, 1);
         else if (horizontalInput < -0.01f)
             transform.localScale = new Vector3(-1, 1, 1);
 
-        // Animációk
         playerAnim.SetBool("Run", horizontalInput != 0 && isGrounded() && !isClimbing);
         playerAnim.SetBool("Grounded", isGrounded());
         playerAnim.SetBool("OnWall", onWall());
         playerAnim.SetBool("Falling", !isGrounded() && playerBody.linearVelocity.y < 0 && !isClimbing);
 
-        // Támadás
         if (Input.GetKeyDown(KeyCode.J))
         {
             Attack();
         }
 
-        // --- MOZGÁS ÉS MÁSZÁS LOGIKA ---
         if (isClimbing)
         {
             playerBody.gravityScale = 0;
@@ -145,8 +140,8 @@ public class Player_Control : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Ha valami halálosba futunk, és még nem vagyunk halottak
-        if ((collision.gameObject.name == "KillZone" || collision.CompareTag("Obstacle") || collision.CompareTag("Spike")) && !isDead)
+        // ITT VAN A JAVÍTÁS: Csak a KillZone-t figyeli, semmi mást!
+        if (collision.gameObject.name == "KillZone" && !isDead)
         {
             StartCoroutine(DieAndRespawn());
         }
@@ -199,10 +194,10 @@ public class Player_Control : MonoBehaviour
 
     IEnumerator DieAndRespawn()
     {
-        isDead = true; // Letiltjuk az Update-et
+        isDead = true;
 
         playerAnim.SetTrigger("Death");
-        playerBody.linearVelocity = Vector2.zero; // Lendület megállítása
+        playerBody.linearVelocity = Vector2.zero;
         playerBody.bodyType = RigidbodyType2D.Static;
 
         yield return new WaitForSeconds(1f);
@@ -212,7 +207,7 @@ public class Player_Control : MonoBehaviour
         playerBody.bodyType = RigidbodyType2D.Dynamic;
         playerBody.gravityScale = 3;
         isClimbing = false;
-        isDead = false; // Újra élünk, mehet az Update
+        isDead = false;
         playerAnim.Rebind();
     }
 
